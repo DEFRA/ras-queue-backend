@@ -96,7 +96,105 @@ const config = convict({
     format: String,
     nullable: true,
     default: null,
-    env: 'HTTP_PROXY'
+    env: 'CDP_HTTP_PROXY'
+  },
+  httpsProxy: {
+    doc: 'HTTPS Proxy',
+    format: String,
+    nullable: true,
+    default: null,
+    env: 'CDP_HTTPS_PROXY'
+  },
+  azTenantId: {
+    doc: 'The azure tenant ID',
+    format: String,
+    required: true,
+    default: 'a1b2',
+    env: 'AZ_TENANT_ID',
+    sensitive: true
+  },
+  azClientId: {
+    doc: 'The azure client ID',
+    format: String,
+    required: true,
+    default: 'a1b2',
+    env: 'AZ_CLIENT_ID',
+    sensitive: true
+  },
+  azClientSecret: {
+    doc: 'The azure client secret',
+    format: String,
+    required: true,
+    default: 'a1b2c3',
+    env: 'AZ_CLIENT_SECRET',
+    sensitive: true
+  },
+  awsRegion: {
+    doc: 'AWS region',
+    format: String,
+    default: 'eu-west-2',
+    env: 'AWS_REGION'
+  },
+  awsAccessKeyId: {
+    doc: 'AWS Access KeyId',
+    format: String,
+    default: '',
+    env: 'AWS_ACCESS_KEY_ID'
+  },
+  awsSecretAccessKey: {
+    doc: 'AWS Secret Access Key',
+    format: String,
+    default: '',
+    env: 'AWS_SECRET_ACCESS_KEY'
+  },
+  awsGatewayEndPoint: {
+    doc: 'AWS Gateway EndPoint',
+    format: String,
+    default: '',
+    env: 'AWS_GATEWAY_ENDPOINT'
+  },
+  awsTokenURL: {
+    doc: 'AWS Token EndPoint',
+    format: String,
+    default: '',
+    env: 'AWS_TOKEN_ENDPOINT'
+  },
+  sharePointSiteId: {
+    doc: 'Sharepoint Site Id',
+    format: String,
+    default: 'test',
+    env: 'SP_SITE_ID'
+  },
+  sharePointDriveId: {
+    doc: 'Sharepoint Drive Id',
+    format: String,
+    default: 'test',
+    env: 'SP_DRIVE_ID'
+  },
+  emailTemplateId: {
+    doc: 'Email Template Id',
+    format: String,
+    default: '78fd5f28-cd3c-4148-83d5-299499b9c4e7',
+    env: 'GOV_EMAIL_TEMPLATE_ID'
+  },
+  emailAPIKey: {
+    doc: 'Email API Key',
+    format: String,
+    default:
+      'rasimisnotification-66b9c1f6-75d1-4ac1-abea-321c9fb9186b-b30af13d-77a6-477f-a796-09fb8f9401c3',
+    env: 'GOV_EMAIL_API_KEY'
+  },
+  emailServiceEndPoint: {
+    doc: 'Email Service End Point',
+    format: String,
+    default: 'https://api.notifications.service.gov.uk/v2/notifications/email',
+    env: 'GOV_EMAIL_SERVICE_END_POINT'
+  },
+  clientState: {
+    doc: 'WebHook Client State',
+    format: String,
+    default: 'secretClientValue',
+    env: 'WEBHOOK_CLIENT_STATE'
   },
   isSecureContextEnabled: {
     doc: 'Enable Secure Context',
