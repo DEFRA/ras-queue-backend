@@ -34,7 +34,9 @@ describe('#startServer', () => {
     process.env.PORT = '3098' // Set to obscure port to avoid conflicts
 
     createServerImport = await import('~/src/api/index.js')
-    startServerImport = await import('~/src/api/common/helpers/start-server.js')
+    startServerImport = await import(
+      '~/src//api/common/helpers/start-server.js'
+    )
 
     createServerSpy = jest.spyOn(createServerImport, 'createServer')
     hapiServerSpy = jest.spyOn(hapi, 'server')
@@ -62,18 +64,10 @@ describe('#startServer', () => {
       )
       expect(mockHapiLoggerInfo).toHaveBeenNthCalledWith(
         2,
-        'Setting up MongoDb'
-      )
-      expect(mockHapiLoggerInfo).toHaveBeenNthCalledWith(
-        3,
-        'MongoDb connected to ras-queue-backend'
-      )
-      expect(mockHapiLoggerInfo).toHaveBeenNthCalledWith(
-        4,
         'Server started successfully'
       )
       expect(mockHapiLoggerInfo).toHaveBeenNthCalledWith(
-        5,
+        3,
         'Access your backend on http://localhost:3098'
       )
     })
