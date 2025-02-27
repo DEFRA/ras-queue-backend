@@ -5,14 +5,14 @@ import { fetchFileContent } from '../../processQueue/services/sharepointService.
 import { queueInitialInfo } from '../constants/queue-initial-data.js'
 import { fetchFileInfo } from '../../common/services/getFiles.js'
 import { sharePointFileinfo } from '../../common/helpers/file-info.js'
-// import { getSubscriptionId } from '../../../api/common/db/data.js'
+// import { getSqsMessages } from '../../processQueue/services/sqsService.js'
 
 let sharePointFile
 
 async function startServer() {
   let server
   const logger = createLogger()
-  // const POLLING_INTERVAL = 30000
+  //  const POLLING_INTERVAL = 1 * 60 * 1000
 
   try {
     server = await createServer()
@@ -22,7 +22,8 @@ async function startServer() {
       `Access your backend on http://localhost:${config.get('port')}`
     )
 
-    // await getSubscriptionId()
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+    //  setInterval(getSqsMessages, POLLING_INTERVAL)
 
     const fileInfo = await fetchFileInfo()
     sharePointFile = sharePointFileinfo(fileInfo)
