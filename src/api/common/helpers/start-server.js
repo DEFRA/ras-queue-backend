@@ -5,7 +5,7 @@ import { fetchFileContent } from '../../processQueue/services/sharepointService.
 import { queueInitialInfo } from '../constants/queue-initial-data.js'
 import { fetchFileInfo } from '../../common/services/getFiles.js'
 import { sharePointFileinfo } from '../../common/helpers/file-info.js'
-// import { getSqsMessages } from '../../processQueue/services/sqsService.js'
+import { getSqsMessages } from '../../processQueue/services/sqsService.js'
 
 let sharePointFile
 
@@ -35,6 +35,7 @@ async function startServer() {
       const fileContent = await fetchFileContent(filePath)
       message.data = fileContent
     }
+    await getSqsMessages()
   } catch (error) {
     logger.info('Server failed to start :(')
     logger.error(error)
