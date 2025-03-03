@@ -58,14 +58,14 @@ async function startServer() {
     })
 
     app.on('error', (err) => {
-      logger.error('Error Occured:', err.message)
+      logger.error(`Error Occured:, ${JSON.stringify(err)}`)
     })
     app.on('processing_error', (err) => {
-      logger.error('Processing error:', err.message)
+      logger.error(`Processing error:, ${JSON.stringify(err)}`)
     })
 
     app.on('timeout_error', (err) => {
-      logger.error('Timeout Error :', err.message)
+      logger.error(`Timeout Error :, ${JSON.stringify(err)}`)
     })
 
     app.start()
