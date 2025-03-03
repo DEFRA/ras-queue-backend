@@ -17,9 +17,9 @@ export const getSqsMessages = async () => {
   const params = {
     QueueUrl: awsQueueUrl,
     MaxNumberOfMessages: 5,
-    WaitTimeSeconds: 10,
-    VisibilityTimeout: 30
+    WaitTimeSeconds: 10
   }
+  logger.info(`Queue URL: ${params.QueueUrl}`)
   try {
     const data = await sqsClient.send(new ReceiveMessageCommand(params))
     logger.info(`messages in Queue`)
