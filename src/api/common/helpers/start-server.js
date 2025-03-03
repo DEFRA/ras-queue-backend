@@ -5,9 +5,11 @@ import { fetchFileContent } from '../../processQueue/services/sharepointService.
 import { queueInitialInfo } from '../constants/queue-initial-data.js'
 import { fetchFileInfo } from '../../common/services/getFiles.js'
 import { sharePointFileinfo } from '../../common/helpers/file-info.js'
-import { getSqsMessages } from '../../processQueue/services/sqsService.js'
+import { sqsClient } from '~/src/api/processQueue/config/awsConfig.js'
+import { Consumer } from 'sqs-consumer'
 
 let sharePointFile
+const awsQueueUrl = config.get('awsQueueUrl')
 
 async function startServer() {
   let server
@@ -22,9 +24,6 @@ async function startServer() {
       `Access your backend on http://localhost:${config.get('port')}`
     )
 
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    setInterval(async () => await getSqsMessages(), POLLING_INTERVAL)
-
     const fileInfo = await fetchFileInfo()
     sharePointFile = sharePointFileinfo(fileInfo)
 
@@ -36,7 +35,40 @@ async function startServer() {
       message.data = fileContent
     }
 
-    await getSqsMessages()
+    const options = {
+      config: {
+        waitTimeSeconds: 10,
+        pollingWaitTimeMs: 10,
+        batchSize: 5
+      }
+    }
+
+    const batchMessageHandler = (message) => {
+      logger.info(`message: ${JSON.stringify(message)}`)
+    }
+
+    const app = Consumer.create({
+      queueUrl: awsQueueUrl,
+      waitTimeSeconds: options.config.waitTimeSeconds,
+      pollingWaitTimeMs: POLLING_INTERVAL,
+      shouldDeleteMessages: true,
+      batchSize: options.config.batchSize,
+      handleMessageBatch: (messages) => batchMessageHandler(messages),
+      sqs: sqsClient
+    })
+
+    app.on('error', (err) => {
+      logger.error('Error Occured:', err.message)
+    })
+    app.on('processing_error', (err) => {
+      logger.error('Processing error:', err.message)
+    })
+
+    app.on('timeout_error', (err) => {
+      logger.error('Timeout Error :', err.message)
+    })
+
+    app.start()
   } catch (error) {
     logger.info('Server failed to start :(')
     logger.error(error)
