@@ -12,7 +12,7 @@ let sharePointFile
 async function startServer() {
   let server
   const logger = createLogger()
-  const POLLING_INTERVAL = 1 * 10 * 1000
+  const POLLING_INTERVAL = 2 * 10 * 1000
 
   try {
     server = await createServer()
