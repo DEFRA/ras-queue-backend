@@ -1,7 +1,7 @@
 import { createLogger } from '~/src/api/common/helpers/logging/logger.js'
 import { sqsClient } from '~/src/api/processQueue/config/awsConfig.js'
-import { transformExcelData } from './transformService.js'
-import { queueInitialInfo } from '~/src/api/common/constants/queue-initial-data.js'
+// import { transformExcelData } from './transformService.js'
+// import { queueInitialInfo } from '~/src/api/common/constants/queue-initial-data.js'
 // import { fetchFileContent } from './sharepointService.js'
 import { config } from '~/src/config/index.js'
 import {
@@ -13,7 +13,7 @@ const logger = createLogger()
 const awsQueueUrl = config.get('awsQueueUrl')
 
 export const getSqsMessages = async () => {
-  await transformExcelData(queueInitialInfo)
+  // await transformExcelData(queueInitialInfo)
   const params = {
     QueueUrl: awsQueueUrl,
     MaxNumberOfMessages: 5,
@@ -22,7 +22,8 @@ export const getSqsMessages = async () => {
   }
   try {
     const data = await sqsClient.send(new ReceiveMessageCommand(params))
-    logger.info('messages in SQS queue', JSON.stringify(data.Messages))
+    logger.info(`messages in Queue`)
+    logger.info(`messages in SQS queue: ${JSON.parse(data.Messages)}`)
     // if (data.Messages && data.Messages.length > 0) {
     //   for (const message of data.Messages) {
     //     queueInitialInfo.map((record) => {
@@ -41,7 +42,7 @@ export const getSqsMessages = async () => {
     //   logger.info('No messages available to process')
     // }
   } catch (error) {
-    logger.error('Error receiving messages:', error)
+    logger.error(`Error receiving messages: ${JSON.stringify(error)}`)
   }
 }
 
