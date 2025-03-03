@@ -23,7 +23,7 @@ async function startServer() {
     )
 
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    // setInterval(() => getSqsMessages, POLLING_INTERVAL)
+    //  setInterval(async () => await getSqsMessages(), POLLING_INTERVAL)
 
     const fileInfo = await fetchFileInfo()
     sharePointFile = sharePointFileinfo(fileInfo)
