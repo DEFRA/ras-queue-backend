@@ -6,6 +6,8 @@ import { queueInitialInfo } from '../constants/queue-initial-data.js'
 import { fetchFileInfo } from '../../common/services/getFiles.js'
 import { sharePointFileinfo } from '../../common/helpers/file-info.js'
 import { sqsClient } from '~/src/api/processQueue/config/awsConfig.js'
+import { transformExcelData } from '../../processQueue/services/transformService.js'
+import { deleteMessage } from '../../processQueue/services/sqsService.js'
 import { Consumer } from 'sqs-consumer'
 
 let sharePointFile
@@ -43,8 +45,30 @@ async function startServer() {
       }
     }
 
-    const batchMessageHandler = (message) => {
-      logger.info(`message: ${JSON.stringify(message)}`)
+    const batchMessageHandler = async (data) => {
+      try {
+        logger.info(`message: ${JSON.stringify(data)}`)
+        if (data.Messages && data.Messages.length > 0) {
+          for (const message of data.Messages) {
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
+            queueInitialInfo.map(async (record) => {
+              if (record.fileName === JSON.parse(message.Body).fileName) {
+                record.data = await fetchFileContent(record.filePath)
+              }
+              return record
+            })
+            await transformExcelData(queueInitialInfo)
+          }
+          // Delete message from SQS
+          for (const message of data.Messages) {
+            await deleteMessage(message.ReceiptHandle)
+          }
+        } else {
+          logger.info('No messages available to process')
+        }
+      } catch (error) {
+        logger.error(`Error while consuming message:, ${JSON.stringify(error)}`)
+      }
     }
 
     const app = Consumer.create({
