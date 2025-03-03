@@ -12,7 +12,7 @@ let sharePointFile
 async function startServer() {
   let server
   const logger = createLogger()
-  // const POLLING_INTERVAL = 1 * 60 * 1000
+  const POLLING_INTERVAL = 1 * 10 * 1000
 
   try {
     server = await createServer()
@@ -23,7 +23,7 @@ async function startServer() {
     )
 
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    //  setInterval(async () => await getSqsMessages(), POLLING_INTERVAL)
+    setInterval(async () => await getSqsMessages(), POLLING_INTERVAL)
 
     const fileInfo = await fetchFileInfo()
     sharePointFile = sharePointFileinfo(fileInfo)
@@ -35,6 +35,7 @@ async function startServer() {
       const fileContent = await fetchFileContent(filePath)
       message.data = fileContent
     }
+
     await getSqsMessages()
   } catch (error) {
     logger.info('Server failed to start :(')
