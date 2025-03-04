@@ -141,11 +141,11 @@ const config = convict({
     default: '',
     env: 'AWS_SQS_QUEUEURL'
   },
-  awsSQSEndPoint: {
-    doc: 'AWS SQS END POINT',
+  sqsEndpoint: {
+    doc: 'AWS SQS endpoint',
     format: String,
     default: '',
-    env: 'AWS_SQS_ENDPOINT'
+    env: 'SQS_ENDPOINT'
   },
   sharePointSiteId: {
     doc: 'Sharepoint Site Id',
