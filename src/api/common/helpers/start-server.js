@@ -7,7 +7,10 @@ import { fetchFileInfo } from '../../common/services/getFiles.js'
 import { sharePointFileinfo } from '../../common/helpers/file-info.js'
 import { sqsClient } from '~/src/api/processQueue/config/awsConfig.js'
 import { transformExcelData } from '../../processQueue/services/transformService.js'
-import { deleteMessage } from '../../processQueue/services/sqsService.js'
+import {
+  deleteMessage,
+  testCredentials
+} from '../../processQueue/services/sqsService.js'
 import { Consumer } from 'sqs-consumer'
 
 let sharePointFile
@@ -70,6 +73,8 @@ async function startServer() {
         logger.error(`Error while consuming message:, ${JSON.stringify(error)}`)
       }
     }
+
+    await testCredentials()
 
     const app = Consumer.create({
       queueUrl: awsQueueUrl,
