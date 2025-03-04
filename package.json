@@ -42,7 +42,6 @@
     "@hapi/boom": "^10.0.1",
     "@hapi/hapi": "^21.3.12",
     "aws-embedded-metrics": "^4.2.0",
-    "aws-sdk": "^2.1692.0",
     "aws4": "^1.13.2",
     "babel-plugin-module-resolver": "^5.0.2",
     "convict": "^6.2.4",
