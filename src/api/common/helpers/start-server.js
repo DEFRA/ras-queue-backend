@@ -9,7 +9,8 @@ import { sqsClient } from '~/src/api/processQueue/config/awsConfig.js'
 import { transformExcelData } from '../../processQueue/services/transformService.js'
 import {
   deleteMessage,
-  testCredentials
+  testCredentials,
+  testSqsClient
 } from '../../processQueue/services/sqsService.js'
 import { Consumer } from 'sqs-consumer'
 
@@ -74,7 +75,8 @@ async function startServer() {
       }
     }
 
-    await testCredentials()
+    testCredentials()
+    await testSqsClient()
 
     const app = Consumer.create({
       queueUrl: awsQueueUrl,
