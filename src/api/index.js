@@ -9,7 +9,7 @@ import { secureContext } from '~/src/api/common/helpers/secure-context/index.js'
 import { pulse } from '~/src/api/common/helpers/pulse.js'
 import { requestTracing } from '~/src/api/common/helpers/request-tracing.js'
 import { setupProxy } from '~/src/api/common/helpers/proxy/setup-proxy.js'
-import { sqsClientPlugin } from "~/src/api/common/helpers/sqs-client.js";
+import { sqsClientPlugin } from '~/src/api/common/helpers/sqs-client.js'
 
 async function createServer() {
   setupProxy()
