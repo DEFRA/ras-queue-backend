@@ -64,6 +64,7 @@ export const deleteMessage = async (receiptHandle) => {
 
 export const testSqsClient = async () => {
   try {
+    logger.info('about to test testSqsClient getQueueUrl')
     const client = new SQSClient({})
     const cmd = new GetQueueUrlCommand({ QueueName: 'ras_automation_backend' })
     const response = await client.send(cmd)
@@ -77,9 +78,7 @@ export const testCredentials = () => {
   try {
     logger.info('testing container metadata')
     const credentials = fromContainerMetadata()
-    logger.info(
-      `AWS Credentials: ${JSON.stringify(credentials?.credentialScope)}`
-    )
+    logger.info(`AWS Credentials: ${JSON.stringify(credentials)}`)
   } catch (error) {
     logger.error(`CredentialsProviderError: ${JSON.stringify(error)}`)
   }
