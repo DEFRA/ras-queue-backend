@@ -1,5 +1,4 @@
 import { createLogger } from '~/src/api/common/helpers/logging/logger.js'
-import { sqsClient } from '~/src/api/processQueue/config/awsConfig.js'
 import { transformExcelData } from './transformService.js'
 import { queueInitialInfo } from '~/src/api/common/constants/queue-initial-data.js'
 import { fetchFileContent } from './sharepointService.js'
@@ -13,7 +12,7 @@ import {
 const logger = createLogger()
 const awsQueueUrl = config.get('awsQueueUrl')
 
-export const getSqsMessages = async () => {
+export const getSqsMessages = async (client) => {
   const params = {
     QueueUrl: awsQueueUrl,
     MaxNumberOfMessages: 5,
@@ -21,7 +20,7 @@ export const getSqsMessages = async () => {
   }
   logger.info(`Queue URL: ${params.QueueUrl}`)
   try {
-    const data = await sqsClient.send(new ReceiveMessageCommand(params))
+    const data = await client.send(new ReceiveMessageCommand(params))
     logger.info(`messages in SQS queue:, ${data.Messages.length}`)
     if (data.Messages && data.Messages.length > 0) {
       for (const message of data.Messages) {
@@ -46,34 +45,34 @@ export const getSqsMessages = async () => {
   }
 }
 
-export const deleteMessage = async (receiptHandle) => {
+export const deleteMessage = async (client, receiptHandle) => {
   const params = {
     QueueUrl: awsQueueUrl,
     ReceiptHandle: receiptHandle
   }
 
   try {
-    await sqsClient.send(new DeleteMessageCommand(params))
+    await client.send(new DeleteMessageCommand(params))
     logger.info('Message deleted successfully')
   } catch (error) {
     logger.error('Error deleting message:', error)
   }
 }
 
-export const testSqsClient = async () => {
+export const testSqsClient = async (client) => {
   try {
     logger.info('about to test testSqsClient getQueueUrl')
     const cmd = new GetQueueUrlCommand({ QueueName: 'ras_automation_backend' })
-    const response = await sqsClient.send(cmd)
+    const response = await client.send(cmd)
     logger.info(`testSqsClient getQueueUrl: ${response?.QueueUrl}`)
   } catch (error) {
     logger.error(`failed to get queue url ${error}`)
   }
 }
 
-export const testCredentials = () => {
+export const testCredentials = (client) => {
   try {
-    logger.info(`AWS Credentials: ${JSON.stringify(sqsClient.config)}`)
+    logger.info(`AWS Credentials: ${JSON.stringify(client.config)}`)
   } catch (error) {
     logger.error(
       `testCredentials CredentialsProviderError: ${JSON.stringify(error)}`

@@ -5,7 +5,6 @@ import { fetchFileContent } from '../../processQueue/services/sharepointService.
 import { queueInitialInfo } from '../constants/queue-initial-data.js'
 import { fetchFileInfo } from '../../common/services/getFiles.js'
 import { sharePointFileinfo } from '../../common/helpers/file-info.js'
-import { sqsClient } from '~/src/api/processQueue/config/awsConfig.js'
 import { transformExcelData } from '../../processQueue/services/transformService.js'
 import {
   deleteMessage,
@@ -30,8 +29,8 @@ async function startServer() {
       `Access your backend on http://localhost:${config.get('port')}`
     )
 
-    testCredentials()
-    await testSqsClient()
+    testCredentials(server.sqs)
+    await testSqsClient(server.sqs)
 
     const fileInfo = await fetchFileInfo()
     sharePointFile = sharePointFileinfo(fileInfo)
@@ -85,7 +84,7 @@ async function startServer() {
       shouldDeleteMessages: true,
       batchSize: options.config.batchSize,
       handleMessageBatch: (messages) => batchMessageHandler(messages),
-      sqs: sqsClient
+      sqs: server.sqs
     })
 
     app.on('error', (err) => {
@@ -97,6 +96,10 @@ async function startServer() {
 
     app.on('timeout_error', (err) => {
       logger.error(`Timeout Error :, ${JSON.stringify(err)}`)
+    })
+
+    server.events.on('closing', () => {
+      app.stop()
     })
 
     app.start()
