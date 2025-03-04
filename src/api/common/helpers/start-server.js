@@ -73,7 +73,7 @@ async function startServer() {
           }
           // Delete message from SQS
           for (const message of messages) {
-            await deleteMessage(message.ReceiptHandle)
+            await deleteMessage(server.sqs, message.ReceiptHandle)
           }
         } else {
           logger.info('No messages available to process')
