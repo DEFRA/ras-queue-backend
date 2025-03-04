@@ -51,22 +51,28 @@ async function startServer() {
       }
     }
 
-    const batchMessageHandler = async (data) => {
+    const batchMessageHandler = async (messages) => {
+      logger.info(`message: ${JSON.stringify(messages)}`)
+      logger.info(`message length: ${JSON.stringify(messages.length)}`)
       try {
-        logger.info(`message: ${JSON.stringify(data)}`)
-        if (data.Messages && data.Messages.length > 0) {
-          for (const message of data.Messages) {
-            // eslint-disable-next-line @typescript-eslint/no-floating-promises
-            queueInitialInfo.map(async (record) => {
-              if (record.fileName === JSON.parse(message.Body).fileName) {
+        if (messages && messages.length > 0) {
+          logger.info(`data message inside: ${JSON.stringify(messages)}`)
+          logger.info(
+            `data message length inside : ${JSON.stringify(messages.length)}`
+          )
+          for (const message of messages) {
+            // eslint-disable-next-line @typescript-eslint/no-misused-promises
+            for (const record of queueInitialInfo) {
+              const parsedMessage = JSON.parse(message.Body)
+              if (record.fileName === parsedMessage.fileName) {
+                logger.info('Entered inside')
                 record.data = await fetchFileContent(record.filePath)
               }
-              return record
-            })
+            }
             await transformExcelData(queueInitialInfo)
           }
           // Delete message from SQS
-          for (const message of data.Messages) {
+          for (const message of messages) {
             await deleteMessage(message.ReceiptHandle)
           }
         } else {
