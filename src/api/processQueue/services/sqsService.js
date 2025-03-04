@@ -8,6 +8,7 @@ import {
   DeleteMessageCommand,
   ReceiveMessageCommand
 } from '@aws-sdk/client-sqs'
+import { fromNodeProviderChain } from '@aws-sdk/credential-providers'
 
 const logger = createLogger()
 const awsQueueUrl = config.get('awsQueueUrl')
@@ -56,5 +57,15 @@ export const deleteMessage = async (receiptHandle) => {
     logger.info('Message deleted successfully')
   } catch (error) {
     logger.error('Error deleting message:', error)
+  }
+}
+
+export const testCredentials = async () => {
+  try {
+    const provider = fromNodeProviderChain()
+    const credentials = await provider()
+    logger.info(`AWS Credentials: ${JSON.stringify(credentials)}`)
+  } catch (error) {
+    logger.error(`CredentialsProviderError: ${JSON.stringify(error)}`)
   }
 }
