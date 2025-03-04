@@ -7,7 +7,8 @@ import { config } from '~/src/config/index.js'
 import {
   DeleteMessageCommand,
   GetQueueUrlCommand,
-  ReceiveMessageCommand
+  ReceiveMessageCommand,
+  SQSClient
 } from '@aws-sdk/client-sqs'
 import { fromContainerMetadata } from '@aws-sdk/credential-providers'
 
@@ -63,8 +64,10 @@ export const deleteMessage = async (receiptHandle) => {
 
 export const testSqsClient = async () => {
   try {
+    logger.info('about to test testSqsClient getQueueUrl')
+    const client = new SQSClient({})
     const cmd = new GetQueueUrlCommand({ QueueName: 'ras_automation_backend' })
-    const response = await sqsClient.send(cmd)
+    const response = await client.send(cmd)
     logger.info(`testSqsClient getQueueUrl: ${response?.QueueUrl}`)
   } catch (error) {
     logger.error(`failed to get queue url`, error)
@@ -75,9 +78,7 @@ export const testCredentials = () => {
   try {
     logger.info('testing container metadata')
     const credentials = fromContainerMetadata()
-    logger.info(
-      `AWS Credentials: ${JSON.stringify(credentials?.credentialScope)}`
-    )
+    logger.info(`AWS Credentials: ${JSON.stringify(credentials)}`)
   } catch (error) {
     logger.error(`CredentialsProviderError: ${JSON.stringify(error)}`)
   }
