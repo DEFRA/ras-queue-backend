@@ -1,7 +1,10 @@
 import { SQSClient } from '@aws-sdk/client-sqs'
-// import { config } from '~/src/config/index.js'
+import { config } from '~/src/config/index.js'
 
-// const awsRegion = config.get('awsRegion')
-// const awsEndPoint = config.get('awsSQSEndPoint')
-
-export const sqsClient = new SQSClient({})
+export const sqsClient = new SQSClient({
+  logger: {
+    ...console
+  },
+  region: config.get('awsRegion'),
+  endpoint: config.get('sqsEndpoint')
+})

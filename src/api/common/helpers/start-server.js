@@ -30,6 +30,9 @@ async function startServer() {
       `Access your backend on http://localhost:${config.get('port')}`
     )
 
+    testCredentials()
+    await testSqsClient()
+
     const fileInfo = await fetchFileInfo()
     sharePointFile = sharePointFileinfo(fileInfo)
 
@@ -74,9 +77,6 @@ async function startServer() {
         logger.error(`Error while consuming message:, ${JSON.stringify(error)}`)
       }
     }
-
-    testCredentials()
-    await testSqsClient()
 
     const app = Consumer.create({
       queueUrl: awsQueueUrl,
