@@ -20,7 +20,6 @@ const awsQueueUrl = config.get('awsQueueUrl')
 async function startServer() {
   let server
   const logger = createLogger()
-  const POLLING_INTERVAL = 2 * 10 * 1000
 
   try {
     server = await createServer()
@@ -47,14 +46,12 @@ async function startServer() {
     const options = {
       config: {
         waitTimeSeconds: 20,
-        pollingWaitTimeMs: 60000,
+        pollingWaitTimeMs: 1 * 60000,
         batchSize: 5
       }
     }
 
     const batchMessageHandler = async (messages) => {
-      logger.info(`message: ${JSON.stringify(messages)}`)
-      logger.info(`message length: ${JSON.stringify(messages.length)}`)
       try {
         if (messages && messages.length > 0) {
           logger.info(`data message inside: ${JSON.stringify(messages)}`)
@@ -88,7 +85,7 @@ async function startServer() {
     const app = Consumer.create({
       queueUrl: awsQueueUrl,
       waitTimeSeconds: options.config.waitTimeSeconds,
-      pollingWaitTimeMs: POLLING_INTERVAL,
+      pollingWaitTimeMs: options.config.pollingWaitTimeMs,
       shouldDeleteMessages: false,
       batchSize: options.config.batchSize,
       handleMessageBatch: (messages) => batchMessageHandler(messages),
