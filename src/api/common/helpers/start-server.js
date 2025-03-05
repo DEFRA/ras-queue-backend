@@ -87,7 +87,7 @@ async function startServer() {
       waitTimeSeconds: options.config.waitTimeSeconds,
       pollingWaitTimeMs: options.config.pollingWaitTimeMs,
       shouldDeleteMessages: false,
-      visibilityTimeout: 2 * 60000,
+      visibilityTimeout: 120,
       batchSize: options.config.batchSize,
       handleMessageBatch: (messages) => batchMessageHandler(messages),
       sqs: server.sqs
