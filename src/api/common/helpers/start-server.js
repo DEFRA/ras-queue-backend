@@ -9,7 +9,8 @@ import { transformExcelData } from '../../processQueue/services/transformService
 import { sendEmails } from '~/src/api/processQueue/services/emailService.js'
 import {
   testCredentials,
-  testSqsClient
+  testSqsClient,
+  deleteMessage
 } from '../../processQueue/services/sqsService.js'
 import { Consumer } from 'sqs-consumer'
 
@@ -70,12 +71,12 @@ async function startServer() {
               }
             }
           }
+          // Delete message from SQS
+          for (const message of messages) {
+            await deleteMessage(server.sqs, message.ReceiptHandle)
+          }
           await transformExcelData(queueInitialInfo)
           await sendEmails()
-          // Delete message from SQS
-          // for (const message of messages) {
-          //   await deleteMessage(server.sqs, message.ReceiptHandle)
-          // }
         } else {
           logger.info('No messages available to process')
         }
@@ -88,7 +89,7 @@ async function startServer() {
       queueUrl: awsQueueUrl,
       waitTimeSeconds: options.config.waitTimeSeconds,
       pollingWaitTimeMs: POLLING_INTERVAL,
-      shouldDeleteMessages: true,
+      shouldDeleteMessages: false,
       batchSize: options.config.batchSize,
       handleMessageBatch: (messages) => batchMessageHandler(messages),
       sqs: server.sqs
