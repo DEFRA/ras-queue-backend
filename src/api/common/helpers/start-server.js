@@ -46,8 +46,8 @@ async function startServer() {
 
     const options = {
       config: {
-        waitTimeSeconds: 10,
-        pollingWaitTimeMs: 10,
+        waitTimeSeconds: 20,
+        pollingWaitTimeMs: 5000,
         batchSize: 5
       }
     }
@@ -70,9 +70,9 @@ async function startServer() {
                 record.data = await fetchFileContent(record.filePath)
               }
             }
-            await transformExcelData(queueInitialInfo)
-            await sendEmails()
           }
+          await transformExcelData(queueInitialInfo)
+          await sendEmails()
           // Delete message from SQS
           for (const message of messages) {
             await deleteMessage(server.sqs, message.ReceiptHandle)
