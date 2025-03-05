@@ -67,9 +67,7 @@ async function startServer() {
                 record.data = await fetchFileContent(record.filePath)
               }
             }
-          }
-          // Delete message from SQS
-          for (const message of messages) {
+            // Delete message from SQS
             await deleteMessage(server.sqs, message.ReceiptHandle)
           }
           await transformExcelData(queueInitialInfo)
