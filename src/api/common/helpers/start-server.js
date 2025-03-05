@@ -8,7 +8,6 @@ import { sharePointFileinfo } from '../../common/helpers/file-info.js'
 import { transformExcelData } from '../../processQueue/services/transformService.js'
 import { sendEmails } from '~/src/api/processQueue/services/emailService.js'
 import {
-  deleteMessage,
   testCredentials,
   testSqsClient
 } from '../../processQueue/services/sqsService.js'
@@ -47,7 +46,7 @@ async function startServer() {
     const options = {
       config: {
         waitTimeSeconds: 20,
-        pollingWaitTimeMs: 5000,
+        pollingWaitTimeMs: 1000,
         batchSize: 5
       }
     }
@@ -74,9 +73,9 @@ async function startServer() {
           await transformExcelData(queueInitialInfo)
           await sendEmails()
           // Delete message from SQS
-          for (const message of messages) {
-            await deleteMessage(server.sqs, message.ReceiptHandle)
-          }
+          // for (const message of messages) {
+          //   await deleteMessage(server.sqs, message.ReceiptHandle)
+          // }
         } else {
           logger.info('No messages available to process')
         }
