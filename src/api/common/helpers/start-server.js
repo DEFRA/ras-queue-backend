@@ -6,6 +6,7 @@ import { queueInitialInfo } from '../constants/queue-initial-data.js'
 import { fetchFileInfo } from '../../common/services/getFiles.js'
 import { sharePointFileinfo } from '../../common/helpers/file-info.js'
 import { transformExcelData } from '../../processQueue/services/transformService.js'
+import { sendEmails } from '~/src/api/processQueue/services/emailService.js'
 import {
   deleteMessage,
   testCredentials,
@@ -70,6 +71,7 @@ async function startServer() {
               }
             }
             await transformExcelData(queueInitialInfo)
+            await sendEmails()
           }
           // Delete message from SQS
           for (const message of messages) {
