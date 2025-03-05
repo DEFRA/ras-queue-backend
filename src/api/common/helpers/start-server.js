@@ -6,7 +6,7 @@ import { queueInitialInfo } from '../constants/queue-initial-data.js'
 import { fetchFileInfo } from '../../common/services/getFiles.js'
 import { sharePointFileinfo } from '../../common/helpers/file-info.js'
 import { transformExcelData } from '../../processQueue/services/transformService.js'
-import { sendEmails } from '~/src/api/processQueue/services/emailService.js'
+// import { sendEmails } from '~/src/api/processQueue/services/emailService.js'
 import {
   testCredentials,
   testSqsClient,
@@ -46,7 +46,7 @@ async function startServer() {
     const options = {
       config: {
         waitTimeSeconds: 20,
-        pollingWaitTimeMs: 2 * 60000,
+        pollingWaitTimeMs: 10000,
         batchSize: 10
       }
     }
@@ -73,7 +73,7 @@ async function startServer() {
             await deleteMessage(server.sqs, message.ReceiptHandle)
           }
           await transformExcelData(queueInitialInfo)
-          await sendEmails()
+          //   await sendEmails()
         } else {
           logger.info('No messages available to process')
         }
@@ -87,6 +87,7 @@ async function startServer() {
       waitTimeSeconds: options.config.waitTimeSeconds,
       pollingWaitTimeMs: options.config.pollingWaitTimeMs,
       shouldDeleteMessages: false,
+      visibilityTimeout: 120,
       batchSize: options.config.batchSize,
       handleMessageBatch: (messages) => batchMessageHandler(messages),
       sqs: server.sqs
