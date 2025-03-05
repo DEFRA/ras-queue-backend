@@ -65,10 +65,10 @@ async function startServer() {
               if (record.fileName === parsedMessage.fileName) {
                 logger.info('Entered inside')
                 record.data = await fetchFileContent(record.filePath)
+                // Delete message from SQS
+                await deleteMessage(server.sqs, message.ReceiptHandle)
               }
             }
-            // Delete message from SQS
-            await deleteMessage(server.sqs, message.ReceiptHandle)
           }
           await transformExcelData(queueInitialInfo)
           //   await sendEmails()
