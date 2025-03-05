@@ -9,8 +9,7 @@ import { transformExcelData } from '../../processQueue/services/transformService
 // import { sendEmails } from '~/src/api/processQueue/services/emailService.js'
 import {
   testCredentials,
-  testSqsClient,
-  deleteMessage
+  testSqsClient
 } from '../../processQueue/services/sqsService.js'
 import { Consumer } from 'sqs-consumer'
 
@@ -65,8 +64,6 @@ async function startServer() {
               if (record.fileName === parsedMessage.fileName) {
                 logger.info('Entered inside')
                 record.data = await fetchFileContent(record.filePath)
-                // Delete message from SQS
-                await deleteMessage(server.sqs, message.ReceiptHandle)
               }
             }
           }
@@ -84,7 +81,7 @@ async function startServer() {
       queueUrl: awsQueueUrl,
       waitTimeSeconds: options.config.waitTimeSeconds,
       pollingWaitTimeMs: options.config.pollingWaitTimeMs,
-      shouldDeleteMessages: false,
+      shouldDeleteMessages: true,
       visibilityTimeout: 120,
       batchSize: options.config.batchSize,
       handleMessageBatch: (messages) => batchMessageHandler(messages),
