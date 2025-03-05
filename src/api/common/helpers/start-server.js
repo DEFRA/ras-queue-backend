@@ -46,7 +46,7 @@ async function startServer() {
     const options = {
       config: {
         waitTimeSeconds: 20,
-        pollingWaitTimeMs: 1 * 30000,
+        pollingWaitTimeMs: 10000,
         batchSize: 10
       }
     }
