@@ -62,12 +62,12 @@ async function startServer() {
 
         for (const message of messages) {
           const parsedMessage = JSON.parse(message.Body)
-          const fileName = parsedMessage.fileName
+          const { fileName } = parsedMessage
           const filePath = queueInitialInfo.find(
             (file) => file.fileName === fileName
           )
           const fileContent = await fetchFileContent(filePath)
-          fs.writeFile(fileName, fileContent)
+          fs.writeFileSync(fileName, fileContent)
         }
         await transformExcelData()
         await sendEmails()
