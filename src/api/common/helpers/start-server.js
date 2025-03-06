@@ -7,7 +7,7 @@ import { fetchFileInfo } from '../../common/services/getFiles.js'
 import { sharePointFileinfo } from '../../common/helpers/file-info.js'
 import { transformExcelData } from '../../processQueue/services/transformService.js'
 import fs from 'fs'
-// import { sendEmails } from '~/src/api/processQueue/services/emailService.js'
+import { sendEmails } from '~/src/api/processQueue/services/emailService.js'
 import {
   testCredentials,
   testSqsClient
@@ -46,7 +46,7 @@ async function startServer() {
     const options = {
       config: {
         waitTimeSeconds: 20,
-        pollingWaitTimeMs: 60000,
+        pollingWaitTimeMs: 2 * 60000,
         batchSize: 10
       }
     }
@@ -70,7 +70,7 @@ async function startServer() {
             }
           }
           await transformExcelData()
-          //   await sendEmails()
+          await sendEmails()
         } else {
           logger.info('No messages available to process')
         }
