@@ -53,7 +53,7 @@ async function startServer() {
     const options = {
       config: {
         waitTimeSeconds: 20,
-        pollingWaitTimeMs: 1 * 60000,
+        pollingWaitTimeMs: 2 * 60000,
         batchSize: 5
       }
     }
@@ -111,7 +111,7 @@ async function startServer() {
       queueUrl: awsQueueUrl,
       waitTimeSeconds: options.config.waitTimeSeconds,
       pollingWaitTimeMs: options.config.pollingWaitTimeMs,
-      visibilityTimeout: 180,
+      visibilityTimeout: 300,
       batchSize: options.config.batchSize,
       handleMessageBatch: batchMessageHandler,
       sqs: server.sqs
