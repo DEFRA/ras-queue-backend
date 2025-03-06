@@ -61,20 +61,23 @@ async function startServer() {
         logger.info(`data message inside: ${JSON.stringify(messages)}`)
 
         for (const message of messages) {
-          const parsedMessage = JSON.parse(message.Body)
-          const { fileName } = parsedMessage
-          const { filePath } = queueInitialInfo.find(
-            (file) => file.fileName === fileName
-          )
-          const fileContent = await fetchFileContent(filePath)
-          fs.writeFileSync(fileName, fileContent)
-        }
-
-        await transformExcelData()
-        await sendEmails()
-        for (const message of messages) {
-          // Delete message from SQS
-          await deleteMessage(server.sqs, message.ReceiptHandle)
+          try {
+            const parsedMessage = JSON.parse(message.Body)
+            const { fileName } = parsedMessage
+            const { filePath } = queueInitialInfo.find(
+              (file) => file.fileName === fileName
+            )
+            const fileContent = await fetchFileContent(filePath)
+            fs.writeFileSync(fileName, fileContent)
+            await transformExcelData()
+            await sendEmails()
+            await deleteMessage(server.sqs, message.ReceiptHandle)
+            logger.info(
+              `Successfully processed and  deleted message: ${message?.MessageId}`
+            )
+          } catch (error) {
+            logger.error(`Error processing message:, ${JSON.stringify(error)}`)
+          }
         }
       } catch (error) {
         logger.error(`Error while consuming message:, ${JSON.stringify(error)}`)
