@@ -1,5 +1,6 @@
 import ExcelJS from 'exceljs'
 import { read, write } from 'xlsx'
+import fs from 'fs'
 
 export const loadExcelToMap = async (
   filePath = '',
@@ -10,7 +11,9 @@ export const loadExcelToMap = async (
 ) => {
   const workbook = new ExcelJS.Workbook()
 
-  const buffer = Buffer.from(filePath)
+  // const buffer = Buffer.from(filePath)
+
+  const buffer = fs.readFileSync(filePath)
 
   const workbookXLSX = read(buffer, { type: 'buffer' })
 
