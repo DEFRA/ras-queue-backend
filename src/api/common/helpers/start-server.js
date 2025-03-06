@@ -10,7 +10,8 @@ import fs from 'fs'
 import { sendEmails } from '~/src/api/processQueue/services/emailService.js'
 import {
   testCredentials,
-  testSqsClient
+  testSqsClient,
+  deleteMessage
 } from '../../processQueue/services/sqsService.js'
 import { Consumer } from 'sqs-consumer'
 
@@ -45,9 +46,9 @@ async function startServer() {
 
     const options = {
       config: {
-        waitTimeSeconds: 20,
-        pollingWaitTimeMs: 2 * 60000,
-        batchSize: 10
+        waitTimeSeconds: 10,
+        pollingWaitTimeMs: 5000,
+        batchSize: 5
       }
     }
 
@@ -59,18 +60,29 @@ async function startServer() {
             `data message length inside : ${JSON.stringify(messages.length)}`
           )
           for (const message of messages) {
-            // eslint-disable-next-line @typescript-eslint/no-misused-promises
-            for (const record of queueInitialInfo) {
-              const parsedMessage = JSON.parse(message.Body)
-              if (record.fileName === parsedMessage.fileName) {
-                logger.info('Entered inside')
-                const fileContent = await fetchFileContent(record.filePath)
-                fs.writeFileSync(record.fileName, fileContent)
+            try {
+              // eslint-disable-next-line @typescript-eslint/no-misused-promises
+              for (const record of queueInitialInfo) {
+                const parsedMessage = JSON.parse(message.Body)
+                if (record.fileName === parsedMessage.fileName) {
+                  logger.info('Entered inside')
+                  const fileContent = await fetchFileContent(record.filePath)
+                  fs.writeFileSync(record.fileName, fileContent)
+                }
               }
+            } catch (error) {
+              logger.error(
+                `Error while processing message:, ${JSON.stringify(error)}`
+              )
             }
           }
           await transformExcelData()
           await sendEmails()
+
+          for (const message of messages) {
+            // Delete message from SQS
+            await deleteMessage(server.sqs, message.ReceiptHandle)
+          }
         } else {
           logger.info('No messages available to process')
         }
@@ -83,8 +95,8 @@ async function startServer() {
       queueUrl: awsQueueUrl,
       waitTimeSeconds: options.config.waitTimeSeconds,
       pollingWaitTimeMs: options.config.pollingWaitTimeMs,
-      shouldDeleteMessages: true,
-      visibilityTimeout: 120,
+      shouldDeleteMessages: false,
+      visibilityTimeout: 300,
       batchSize: options.config.batchSize,
       handleMessageBatch: (messages) => batchMessageHandler(messages),
       sqs: server.sqs
