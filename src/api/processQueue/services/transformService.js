@@ -14,7 +14,7 @@ import fs from 'fs'
 
 const logger = createLogger()
 
-export const transformExcelData = async (response) => {
+export const transformExcelData = async () => {
   logger.info(
     'Inputs received from controller to process the template creation'
   )
@@ -59,14 +59,14 @@ export const transformExcelData = async (response) => {
   }))
 
   const targetProjectIds = await loadColumnNamesByName(
-    response,
+    'FETF_FTF_Selection_Working_Doc.xlsx',
     'Selected',
     'Project Ref',
     'Combine Removed Duplicates'
   )
 
   const data = await getMappingDataForExcel(
-    response,
+    'giles_report_official_sensitive_2b.xlsb',
     'Project Ref',
     targetProjectIds
   )

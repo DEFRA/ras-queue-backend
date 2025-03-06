@@ -6,6 +6,7 @@ import { queueInitialInfo } from '../constants/queue-initial-data.js'
 import { fetchFileInfo } from '../../common/services/getFiles.js'
 import { sharePointFileinfo } from '../../common/helpers/file-info.js'
 import { transformExcelData } from '../../processQueue/services/transformService.js'
+import fs from 'fs'
 // import { sendEmails } from '~/src/api/processQueue/services/emailService.js'
 import {
   testCredentials,
@@ -35,11 +36,11 @@ async function startServer() {
     sharePointFile = sharePointFileinfo(fileInfo)
 
     for (const message of queueInitialInfo) {
-      const { filePath } = message
+      const { filePath, fileName } = message
 
       // Fetch file content from SharePoint
       const fileContent = await fetchFileContent(filePath)
-      message.data = fileContent
+      fs.writeFileSync(fileName, fileContent)
     }
 
     const options = {
@@ -63,11 +64,12 @@ async function startServer() {
               const parsedMessage = JSON.parse(message.Body)
               if (record.fileName === parsedMessage.fileName) {
                 logger.info('Entered inside')
-                record.data = await fetchFileContent(record.filePath)
+                const fileContent = await fetchFileContent(record.filePath)
+                fs.writeFileSync(record.fileName, fileContent)
               }
             }
           }
-          await transformExcelData(queueInitialInfo)
+          await transformExcelData()
           //   await sendEmails()
         } else {
           logger.info('No messages available to process')

@@ -2,6 +2,7 @@ import ExcelJS from 'exceljs'
 import { loadExcelToMap } from '~/src/api/processQueue/utils/loadExcelToMap.js'
 import { read, write } from 'xlsx'
 import { cleanNumberField } from '../utils/index.js'
+import fs from 'fs'
 
 export const getMappingDataForExcel = async (
   sourceFile,
@@ -12,13 +13,13 @@ export const getMappingDataForExcel = async (
     const workbook = new ExcelJS.Workbook()
 
     // use stream reader for large files
-    //  const readStream = fs.readFileSync(sourceFile)
+    const buffer = fs.readFileSync(sourceFile)
 
-    const buffer = Buffer.from(
-      sourceFile.find(
-        (file) => file.fileName === 'giles_report_official_sensitive_2b.xlsb'
-      ).data
-    )
+    // const buffer = Buffer.from(
+    //   sourceFile.find(
+    //     (file) => file.fileName === 'giles_report_official_sensitive_2b.xlsb'
+    //   ).data
+    // )
 
     const workbookXLSX = read(buffer, { type: 'buffer' })
 
@@ -85,30 +86,21 @@ export const getMappingDataForExcel = async (
     // )
 
     const LMT_CORE = await loadExcelToMap(
-      sourceFile.find(
-        (file) =>
-          file.fileName === 'CPH_SEO_Group_Look_Up_Table_V4_23.01.2025.xlsx'
-      ).data,
+      'CPH_SEO_Group_Look_Up_Table_V4_23.01.2025.xlsx',
       'Enter CPH data in this column',
       ['SEO Group'],
       'CPH to SEO group Match'
     )
 
     const SEO_GROUP = await loadExcelToMap(
-      sourceFile.find(
-        (file) =>
-          file.fileName === 'CPH_SEO_Group_Look_Up_Table_V4_23.01.2025.xlsx'
-      ).data,
+      'CPH_SEO_Group_Look_Up_Table_V4_23.01.2025.xlsx',
       'County',
       ['SEOGroup'],
       'CPH to SEO group Match'
     )
 
     const SEO_GROUP_SHORE_SPLIT = await loadExcelToMap(
-      sourceFile.find(
-        (file) =>
-          file.fileName === 'CPH_SEO_Group_Look_Up_Table_V4_23.01.2025.xlsx'
-      ).data,
+      'CPH_SEO_Group_Look_Up_Table_V4_23.01.2025.xlsx',
       'County & Parish Number',
       ['AREA'],
       '35 Shropshire Split'
@@ -126,7 +118,7 @@ export const getMappingDataForExcel = async (
     }
 
     const PHONE_NO = await loadExcelToMap(
-      sourceFile.find((file) => file.fileName === 'CS_MEASURES.xlsb').data,
+      'CS_MEASURES.xlsb',
       'SBI',
       [
         'LANDLINE',
@@ -143,9 +135,7 @@ export const getMappingDataForExcel = async (
     )
 
     const CLAIM_VALUE_DOSSIER = await loadExcelToMap(
-      sourceFile.find(
-        (file) => file.fileName === 'giles_report_official_sensitive_1.xlsb'
-      ).data,
+      'giles_report_official_sensitive_1.xlsb',
       'Project Ref',
       ['Forecast claim (grant) value', 'Sub Scheme'],
       'giles_report_official_sensitive',

@@ -4,7 +4,8 @@
     "**/*.test.*",
     "./test-helpers",
     "./src/common/assets",
-    "./src/api/common/db"
+    "./src/api/common/db",
+    "./src"
   ],
   "ext": "js,json,njk,scss",
   "signal": "SIGINT"
