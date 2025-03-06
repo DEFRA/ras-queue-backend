@@ -46,45 +46,34 @@ async function startServer() {
 
     const options = {
       config: {
-        waitTimeSeconds: 10,
-        pollingWaitTimeMs: 5000,
+        waitTimeSeconds: 20,
+        pollingWaitTimeMs: 2 * 60000,
         batchSize: 5
       }
     }
 
     const batchMessageHandler = async (messages) => {
       try {
-        if (messages && messages.length > 0) {
-          logger.info(`data message inside: ${JSON.stringify(messages)}`)
-          logger.info(
-            `data message length inside : ${JSON.stringify(messages.length)}`
-          )
-          for (const message of messages) {
-            try {
-              // eslint-disable-next-line @typescript-eslint/no-misused-promises
-              for (const record of queueInitialInfo) {
-                const parsedMessage = JSON.parse(message.Body)
-                if (record.fileName === parsedMessage.fileName) {
-                  logger.info('Entered inside')
-                  const fileContent = await fetchFileContent(record.filePath)
-                  fs.writeFileSync(record.fileName, fileContent)
-                }
-              }
-            } catch (error) {
-              logger.error(
-                `Error while processing message:, ${JSON.stringify(error)}`
-              )
-            }
-          }
-          await transformExcelData()
-          await sendEmails()
-
-          for (const message of messages) {
-            // Delete message from SQS
-            await deleteMessage(server.sqs, message.ReceiptHandle)
-          }
-        } else {
+        if (!messages || messages.length === 0) {
           logger.info('No messages available to process')
+          return
+        }
+        logger.info(`data message inside: ${JSON.stringify(messages)}`)
+
+        for (const message of messages) {
+          const parsedMessage = JSON.parse(message.Body)
+          const fileName = parsedMessage.fileName
+          const filePath = queueInitialInfo.find(
+            (file) => file.fileName === fileName
+          )
+          const fileContent = await fetchFileContent(filePath)
+          fs.writeFile(fileName, fileContent)
+        }
+        await transformExcelData()
+        await sendEmails()
+        for (const message of messages) {
+          // Delete message from SQS
+          await deleteMessage(server.sqs, message.ReceiptHandle)
         }
       } catch (error) {
         logger.error(`Error while consuming message:, ${JSON.stringify(error)}`)
@@ -95,10 +84,9 @@ async function startServer() {
       queueUrl: awsQueueUrl,
       waitTimeSeconds: options.config.waitTimeSeconds,
       pollingWaitTimeMs: options.config.pollingWaitTimeMs,
-      shouldDeleteMessages: false,
-      visibilityTimeout: 300,
+      visibilityTimeout: 180,
       batchSize: options.config.batchSize,
-      handleMessageBatch: (messages) => batchMessageHandler(messages),
+      handleMessageBatch: batchMessageHandler,
       sqs: server.sqs
     })
 
