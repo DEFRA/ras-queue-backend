@@ -49,8 +49,7 @@ export const uploadFileToSharePoint = async (filePath, transformedBuffer) => {
   try {
     const response = await proxyFetch(url, options)
     logger.info(
-      'Transformed file uploaded to sharepoint successfully.',
-      response.status
+      `Transformed file uploaded to sharepoint successfully : ${JSON.stringify(response)}}`
     )
   } catch (error) {
     logger.error('Error uploading file', error.message)
