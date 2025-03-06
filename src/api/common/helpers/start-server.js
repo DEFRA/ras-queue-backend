@@ -2,9 +2,15 @@ import { config } from '../../../config/index.js'
 import { createServer } from '../../../api/index.js'
 import { createLogger } from '../../../api/common/helpers/logging/logger.js'
 import { fetchFileContent } from '../../processQueue/services/sharepointService.js'
-import { queueInitialInfo } from '../constants/queue-initial-data.js'
+import {
+  queueInitialInfo,
+  REQUIRED_FILES
+} from '../constants/queue-initial-data.js'
 import { fetchFileInfo } from '../../common/services/getFiles.js'
-import { sharePointFileinfo } from '../../common/helpers/file-info.js'
+import {
+  sharePointFileinfo,
+  findMissingFiles
+} from '../../common/helpers/file-info.js'
 import { transformExcelData } from '../../processQueue/services/transformService.js'
 import fs from 'fs'
 import { sendEmails } from '~/src/api/processQueue/services/emailService.js'
@@ -47,7 +53,7 @@ async function startServer() {
     const options = {
       config: {
         waitTimeSeconds: 20,
-        pollingWaitTimeMs: 2 * 60000,
+        pollingWaitTimeMs: 1 * 60000,
         batchSize: 5
       }
     }
@@ -69,6 +75,23 @@ async function startServer() {
             )
             const fileContent = await fetchFileContent(filePath)
             fs.writeFileSync(fileName, fileContent)
+
+            // Check if files are missing before processing
+            const fileInfo = await fetchFileInfo()
+            const filesInSharePoint = fileInfo.value.map((data) => data.name)
+            const missingFiles = findMissingFiles(
+              REQUIRED_FILES,
+              filesInSharePoint
+            )
+
+            if (missingFiles && missingFiles.length > 0) {
+              logger.info(
+                missingFiles.length > 0 ??
+                  `Missing files: ${missingFiles.join(', ')}`
+              )
+              return
+            }
+
             await transformExcelData()
             await sendEmails()
             await deleteMessage(server.sqs, message.ReceiptHandle)

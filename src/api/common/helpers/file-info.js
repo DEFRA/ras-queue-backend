@@ -38,3 +38,7 @@ export const getUpdatedFiles = (data) => {
     webUrl
   }))
 }
+
+export const findMissingFiles = (arr1, arr2) => {
+  return arr1.filter((value) => !arr2.includes(value))
+}
