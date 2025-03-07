@@ -148,78 +148,79 @@ export const getMappingDataForExcel = async (
       'FETF 2024 Slurry': 'FETF-2024 Slry Rand'
     }
 
-    for (const row of worksheet._rows) {
-      if (row) {
-        if (row.number > 4) {
-          const projectId = row.getCell(columnIndex).value
-          if (targetProjectIds.includes(projectId)) {
-            // Data that needs to be populate in each row
-            mappedObject.push({
-              ...obj,
-              SBICore: row.getCell(getSBIIndex).value || null,
-              CPHCore:
-                PHONE_NO.get(row.getCell(getSBIIndex).value)?.CPH_CODE || null,
-              limtCore: LMT_CORE_CONVERSION(
-                LMT_CORE?.get(
-                  PHONE_NO.get(row.getCell(getSBIIndex).value)?.CPH_CODE
-                )?.['SEO Group']?.result,
-                PHONE_NO.get(row.getCell(getSBIIndex).value)?.CPH_CODE,
-                row.getCell(getAddressCore4).value
-              ),
-              FRNCore:
-                PHONE_NO.get(row.getCell(getSBIIndex).value)?.FRN || null,
-              phoneNoCore:
-                cleanNumberField(
-                  PHONE_NO.get(row.getCell(getSBIIndex).value)?.LANDLINE
-                ) ?? null,
-              mobileCore:
-                cleanNumberField(
-                  PHONE_NO.get(row.getCell(getSBIIndex).value)?.MOBILE
-                ) || null,
-              customerNameCore:
-                PHONE_NO.get(row.getCell(getSBIIndex).value)
-                  ?.ORGANISATION_NAME || null,
-              lifetimeValueRDP:
-                CLAIM_VALUE_DOSSIER.get(row.getCell(columnIndex).value)?.[
-                  'Forecast claim (grant) value'
-                ] ?? null,
-              agreementRefCore: row.getCell(columnIndex)?.value ?? null,
-              highValueCore:
-                CLAIM_VALUE_DOSSIER.get(row.getCell(columnIndex).value)?.[
-                  'Forecast claim (grant) value'
-                ] > 50000
-                  ? 'Y'
-                  : 'N',
-              claimValueDossier:
-                CLAIM_VALUE_DOSSIER.get(row.getCell(columnIndex).value)?.[
-                  'Forecast claim (grant) value'
-                ] ?? null,
-              addressCore1:
-                PHONE_NO.get(row.getCell(getSBIIndex).value)?.ADDRESS_LINE1 ||
-                null,
-              addressCore2:
-                PHONE_NO.get(row.getCell(getSBIIndex).value)?.ADDRESS_LINE2 ||
-                null,
-              addressCore3:
-                PHONE_NO.get(row.getCell(getSBIIndex).value)?.CITY || null,
-              addressCore4: row.getCell(getAddressCore4).value ?? null,
-              postCodeCore:
-                PHONE_NO.get(row.getCell(getSBIIndex).value)?.POST_CODE ?? null,
-              selectionBasisRDP:
-                (selectionBasisRDPConversion[
-                  CLAIM_VALUE_DOSSIER.get(row.getCell(columnIndex).value)?.[
-                    'Sub Scheme'
-                  ]
-                ] ||
-                  CLAIM_VALUE_DOSSIER.get(row.getCell(columnIndex).value)?.[
-                    'Sub Scheme'
-                  ]) ??
-                null
-            })
-          }
-        }
-      }
-    }
+    const targetProjectIdSet = new Set(targetProjectIds)
+
+    const filteredRows = worksheet._rows.filter((row) => {
+      if (!row || row.number <= 4) return false
+
+      const projectId = row.getCell(columnIndex).value
+      return targetProjectIdSet.has(projectId)
+    })
+
+    // for (const row of filteredRows) {
+    // Data that needs to be populate in each row
+    filteredRows.forEach((row) => {
+      mappedObject.push({
+        ...obj,
+        SBICore: row.getCell(getSBIIndex).value || null,
+        CPHCore: PHONE_NO.get(row.getCell(getSBIIndex).value)?.CPH_CODE || null,
+        limtCore: LMT_CORE_CONVERSION(
+          LMT_CORE?.get(
+            PHONE_NO.get(row.getCell(getSBIIndex).value)?.CPH_CODE
+          )?.['SEO Group']?.result,
+          PHONE_NO.get(row.getCell(getSBIIndex).value)?.CPH_CODE,
+          row.getCell(getAddressCore4).value
+        ),
+        FRNCore: PHONE_NO.get(row.getCell(getSBIIndex).value)?.FRN || null,
+        phoneNoCore:
+          cleanNumberField(
+            PHONE_NO.get(row.getCell(getSBIIndex).value)?.LANDLINE
+          ) ?? null,
+        mobileCore:
+          cleanNumberField(
+            PHONE_NO.get(row.getCell(getSBIIndex).value)?.MOBILE
+          ) || null,
+        customerNameCore:
+          PHONE_NO.get(row.getCell(getSBIIndex).value)?.ORGANISATION_NAME ||
+          null,
+        lifetimeValueRDP:
+          CLAIM_VALUE_DOSSIER.get(row.getCell(columnIndex).value)?.[
+            'Forecast claim (grant) value'
+          ] ?? null,
+        agreementRefCore: row.getCell(columnIndex)?.value ?? null,
+        highValueCore:
+          CLAIM_VALUE_DOSSIER.get(row.getCell(columnIndex).value)?.[
+            'Forecast claim (grant) value'
+          ] > 50000
+            ? 'Y'
+            : 'N',
+        claimValueDossier:
+          CLAIM_VALUE_DOSSIER.get(row.getCell(columnIndex).value)?.[
+            'Forecast claim (grant) value'
+          ] ?? null,
+        addressCore1:
+          PHONE_NO.get(row.getCell(getSBIIndex).value)?.ADDRESS_LINE1 || null,
+        addressCore2:
+          PHONE_NO.get(row.getCell(getSBIIndex).value)?.ADDRESS_LINE2 || null,
+        addressCore3:
+          PHONE_NO.get(row.getCell(getSBIIndex).value)?.CITY || null,
+        addressCore4: row.getCell(getAddressCore4).value ?? null,
+        postCodeCore:
+          PHONE_NO.get(row.getCell(getSBIIndex).value)?.POST_CODE ?? null,
+        selectionBasisRDP:
+          (selectionBasisRDPConversion[
+            CLAIM_VALUE_DOSSIER.get(row.getCell(columnIndex).value)?.[
+              'Sub Scheme'
+            ]
+          ] ||
+            CLAIM_VALUE_DOSSIER.get(row.getCell(columnIndex).value)?.[
+              'Sub Scheme'
+            ]) ??
+          null
+      })
+    })
+
+    //    }
 
     return mappedObject
   } catch (error) {
