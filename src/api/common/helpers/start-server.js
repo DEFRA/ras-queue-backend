@@ -92,9 +92,12 @@ async function startServer() {
               return
             }
 
-            await transformExcelData()
-            await sendEmails()
-            await deleteMessage(server.sqs, message.ReceiptHandle)
+            await Promise.all([
+              transformExcelData(),
+              sendEmails(),
+              deleteMessage(server.sqs, message.ReceiptHandle)
+            ])
+
             logger.info(
               `Successfully processed and  deleted message: ${message?.MessageId}`
             )
