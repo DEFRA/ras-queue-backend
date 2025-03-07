@@ -10,7 +10,6 @@ import { getMappingDataForExcel } from '~/src/api/processQueue/utils/mappingData
 import { applyValidationBasedOnHeaderColor } from '~/src/api/processQueue/utils/validations.js'
 import { uploadFileToSharePoint } from '~/src/api/processQueue/services/sharepointService.js'
 import { createLogger } from '~/src/api/common/helpers/logging/logger.js'
-import fs from 'fs'
 
 const logger = createLogger()
 
@@ -126,7 +125,7 @@ export const transformExcelData = async () => {
   logger.info('Buffer is ready  to process the template creation')
 
   // Save the Excel file locally to test
-  fs.writeFileSync('IMIS-TEMPLATE.xlsx', buffer)
+  // fs.writeFileSync('IMIS-TEMPLATE.xlsx', buffer)
 
   // Upload transformed content back to sharepoint
   await uploadFileToSharePoint('/IMIS Template/IMIS-TEMPLATE.xlsx', buffer)
