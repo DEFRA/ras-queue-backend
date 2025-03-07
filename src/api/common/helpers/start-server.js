@@ -74,7 +74,7 @@ async function startServer() {
               (file) => file.fileName === fileName
             )
             const fileContent = await fetchFileContent(filePath)
-            fs.writeFileSync(fileName, fileContent)
+            await fs.promises.writeFile(fileName, fileContent)
 
             // Check if files are missing before processing
             const fileInfo = await fetchFileInfo()
