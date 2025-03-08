@@ -55,18 +55,19 @@ export const loadExcelToMap = async (
   //     }
   //   }
   // })
-  const rows = worksheet.getSheetValues()
-  for (let i = rowNumber + 1; i < rows.length; i++) {
-    const row = rows[i]
-    if (!row) continue
-    const key = row[columnMap[keyColumnName]]?.value
-    if (!key) continue
 
-    const values = {}
-    for (const name of valueColumnNames) {
-      values[name] = row[columnMap[name]]?.value || null
+  for (let i = rowNumber + 1; i < worksheet._rows.length; i++) {
+    const row = worksheet._rows[i]
+    if (!row) continue
+    const key = row.getCell(columnMap[keyColumnName]).value
+
+    if (key) {
+      const values = {}
+      for (const name of valueColumnNames) {
+        values[name] = row[columnMap[name]]?.value || null
+      }
+      dataMap.set(key, values)
     }
-    dataMap.set(key, values)
   }
 
   const logInfo = {
