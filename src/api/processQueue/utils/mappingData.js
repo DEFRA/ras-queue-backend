@@ -1,5 +1,6 @@
 import ExcelJS from 'exceljs'
 import { loadExcelToMap } from '~/src/api/processQueue/utils/loadExcelToMap.js'
+import { createLogger } from '~/src/api/common/helpers/logging/logger.js'
 import { read, write } from 'xlsx'
 import { cleanNumberField } from '../utils/index.js'
 import fs from 'fs'
@@ -11,6 +12,8 @@ export const getMappingDataForExcel = async (
 ) => {
   try {
     const workbook = new ExcelJS.Workbook()
+    const logger = createLogger()
+    const startTime = new Date()
 
     // use stream reader for large files
     const buffer = fs.readFileSync(sourceFile)
@@ -207,6 +210,13 @@ export const getMappingDataForExcel = async (
       })
 
     //    }
+
+    const logInfo = {
+      method: 'getMappingDataForExcel',
+      duration: new Date() - startTime
+    }
+
+    logger.info(`Start time in mappingData ${JSON.stringify(logInfo)}`)
 
     return mappedObject
   } catch (error) {
