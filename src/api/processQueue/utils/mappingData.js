@@ -31,7 +31,7 @@ export const getMappingDataForExcel = async (
     await workbook.xlsx.load(xlsxBuffer)
 
     // Get first sheet from source workbook
-    const worksheet = workbook.getWorksheet(1)
+    let worksheet = workbook.getWorksheet(1)
 
     // Get header row ( first row names)
     const headerRow = worksheet.getRow(4)
@@ -217,6 +217,8 @@ export const getMappingDataForExcel = async (
     }
 
     logger.info(`Start time in mappingData ${JSON.stringify(logInfo)}`)
+
+    worksheet = null
 
     return mappedObject
   } catch (error) {
