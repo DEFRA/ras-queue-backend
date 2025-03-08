@@ -114,7 +114,7 @@ async function startServer() {
       queueUrl: awsQueueUrl,
       waitTimeSeconds: options.config.waitTimeSeconds,
       pollingWaitTimeMs: options.config.pollingWaitTimeMs,
-      visibilityTimeout: 600,
+      visibilityTimeout: 1800,
       batchSize: options.config.batchSize,
       handleMessageBatch: batchMessageHandler,
       sqs: server.sqs
