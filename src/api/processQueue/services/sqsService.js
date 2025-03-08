@@ -52,8 +52,11 @@ export const deleteMessage = async (client, receiptHandle) => {
   }
 
   try {
-    await client.send(new DeleteMessageCommand(params))
-    logger.info('Message deleted successfully')
+    const response = await client.send(new DeleteMessageCommand(params))
+    logger.info({
+      message: `Message deleted successfully`,
+      response
+    })
   } catch (error) {
     logger.error('Error deleting message:', error)
   }
