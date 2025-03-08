@@ -24,7 +24,7 @@ export const loadExcelToMap = async (
 
   await workbook.xlsx.load(xlsxBuffer)
 
-  const worksheet = workbook.getWorksheet(workSheetName)
+  let worksheet = workbook.getWorksheet(workSheetName)
 
   // Extract column names from header Row
   const headerRow = rowNumber && worksheet.getRow(rowNumber)
@@ -95,6 +95,8 @@ export const loadExcelToMap = async (
   }
 
   logger.info(`Start time in loadExcelToMap ${JSON.stringify(logInfo)}`)
+
+  worksheet = null
 
   return dataMap
 }

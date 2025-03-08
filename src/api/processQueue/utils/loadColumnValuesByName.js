@@ -28,7 +28,7 @@ export const loadColumnNamesByName = async (
 
   await workbook.xlsx.load(xlsxBuffer)
 
-  const worksheet = workbook.getWorksheet(workSheetName)
+  let worksheet = workbook.getWorksheet(workSheetName)
 
   const lookupValue = 'Y'
 
@@ -67,6 +67,8 @@ export const loadColumnNamesByName = async (
     duration: new Date() - startTime
   }
   logger.info(`Start time ${JSON.stringify(logInfo)}`)
+
+  worksheet = null
 
   return result
 }
