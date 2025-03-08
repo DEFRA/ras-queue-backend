@@ -40,15 +40,28 @@ export const loadColumnNamesByName = async (
 
   const nameColumnIndex = headerRow.values.indexOf(valueColumnName)
 
-  worksheet.eachRow((row, rowIndex) => {
-    const idValue = row.getCell(idColumnIndex).value
-    if (rowIndex > rowNumber) {
-      if (idValue === lookupValue) {
-        const nameValue = row.getCell(nameColumnIndex).value
-        result.push(nameValue)
-      }
+  // worksheet.eachRow((row, rowIndex) => {
+  //   const idValue = row.getCell(idColumnIndex).value
+  //   if (rowIndex > rowNumber) {
+  //     if (idValue === lookupValue) {
+  //       const nameValue = row.getCell(nameColumnIndex).value
+  //       result.push(nameValue)
+  //     }
+  //   }
+  // })
+
+  const rows = worksheet.getSheetValues()
+  for (let i = rowNumber + 1; i < rows.length; i++) {
+    const row = rows[i]
+    if (!row) continue
+
+    const idValue = row[idColumnIndex]
+    if (idValue === lookupValue) {
+      const nameValue = row[nameColumnIndex]
+      result.push(nameValue)
     }
-  })
+  }
+
   const logInfo = {
     method: 'loadColumnNamesByName',
     duration: new Date() - startTime

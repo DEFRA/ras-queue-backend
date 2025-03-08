@@ -56,18 +56,36 @@ export const loadExcelToMap = async (
   //   }
   // })
 
-  for (let i = rowNumber + 1; i < worksheet._rows.length; i++) {
-    const row = worksheet._rows[i]
-    if (!row) continue
-    const key = row.getCell(columnMap[keyColumnName]).value
+  // const rows = worksheet.getSheetValues()
 
-    if (key) {
-      const values = {}
-      for (const name of valueColumnNames) {
-        values[name] = row[columnMap[name]]?.value || null
-      }
-      dataMap.set(key, values)
-    }
+  // console.log('rowCount:', rows.length)
+
+  // for (let rowIndex = rowNumber; rowIndex <= rows.length; rowIndex++) {
+  //   const row = rows[rowIndex]
+  //   console.log("each row", row)
+  //   if (!row) continue
+  //   const key = row[columnMap.indexOf(keyColumnName)]?.value
+
+  //   if (key) {
+  //     const values = {}
+  //     for (const name of valueColumnNames) {
+  //       values[name] = row[columnMap[name]]?.value || null
+  //     }
+  //     dataMap.set(key, values)
+  //   }
+  // }
+
+  const rows = worksheet.getRows(rowNumber, worksheet.rowCount - rowNumber)
+  for (const row of rows) {
+    const key = row.getCell(columnMap[keyColumnName])?.value
+    if (!key) continue
+    const values = Object.fromEntries(
+      valueColumnNames.map((name) => [
+        name,
+        row.getCell(columnMap[name])?.value ?? null
+      ])
+    )
+    dataMap.set(key, values)
   }
 
   const logInfo = {
