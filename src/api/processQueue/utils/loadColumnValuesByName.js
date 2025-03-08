@@ -1,6 +1,7 @@
 import ExcelJS from 'exceljs'
 import fs from 'fs'
 import { read, write } from 'xlsx'
+import { createLogger } from '~/src/api/common/helpers/logging/logger.js'
 
 export const loadColumnNamesByName = async (
   sourceFile = '',
@@ -9,6 +10,8 @@ export const loadColumnNamesByName = async (
   workSheetName = '',
   rowNumber = 1
 ) => {
+  const logger = createLogger()
+  const startTime = new Date()
   const workbook = new ExcelJS.Workbook()
 
   // const buffer = Buffer.from(
@@ -46,6 +49,11 @@ export const loadColumnNamesByName = async (
       }
     }
   })
+  const logInfo = {
+    method: 'loadColumnNamesByName',
+    duration: new Date() - startTime
+  }
+  logger.info(`Start time ${JSON.stringify(logInfo)}`)
 
   return result
 }
