@@ -18,7 +18,11 @@ export const loadExcelToMap = async (
 
   const buffer = fs.readFileSync(filePath)
 
-  const workbookXLSX = read(buffer, { type: 'buffer' })
+  const workbookXLSX = read(buffer, {
+    type: 'buffer',
+    cellFormula: false,
+    cellStyles: false
+  })
 
   const xlsxBuffer = write(workbookXLSX, { bookType: 'xlsx', type: 'buffer' })
 
