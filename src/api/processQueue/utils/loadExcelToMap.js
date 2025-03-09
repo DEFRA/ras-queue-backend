@@ -75,7 +75,7 @@ export const loadExcelToMap = async (
   //   }
   // }
 
-  const rows = worksheet.getRows(rowNumber, worksheet.rowCount - rowNumber)
+  let rows = worksheet.getRows(rowNumber, worksheet.rowCount - rowNumber)
   for (const row of rows) {
     const key = row.getCell(columnMap[keyColumnName])?.value
     if (!key) continue
@@ -97,6 +97,8 @@ export const loadExcelToMap = async (
   logger.info(`Start time in loadExcelToMap ${JSON.stringify(logInfo)}`)
 
   worksheet = null
+
+  rows = null
 
   return dataMap
 }
