@@ -125,7 +125,7 @@ export const getMappingDataForExcel = async (
     }
 
     const PHONE_NO = await loadExcelToMap(
-      'CS_MEASURES.xlsb',
+      'CS_MEASURES.xlsx',
       'SBI',
       [
         'LANDLINE',
