@@ -13,18 +13,20 @@ export const loadExcelToMap = async (
   const workbook = new ExcelJS.Workbook()
   const logger = createLogger()
   const startTime = new Date()
+  const extension = filePath.split('.').pop()
+  let buffer = fs.readFileSync(filePath)
+
+  if (extension === 'xlsb') {
+    const workbookXLSX = read(buffer, {
+      type: 'buffer'
+    })
+
+    buffer = write(workbookXLSX, { bookType: 'xlsx', type: 'buffer' })
+  }
 
   // const buffer = Buffer.from(filePath)
 
-  const buffer = fs.readFileSync(filePath)
-
-  const workbookXLSX = read(buffer, {
-    type: 'buffer'
-  })
-
-  const xlsxBuffer = write(workbookXLSX, { bookType: 'xlsx', type: 'buffer' })
-
-  await workbook.xlsx.load(xlsxBuffer)
+  await workbook.xlsx.load(buffer)
 
   let worksheet = workbook.getWorksheet(workSheetName)
 
