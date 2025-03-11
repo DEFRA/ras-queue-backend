@@ -1,4 +1,7 @@
-import { styleToHighlight } from '../utils/index.js'
+import {
+  styleToHighlight,
+  styleToHighlightValidationError
+} from '../utils/index.js'
 
 export const applyValidationBasedOnHeaderColor = (worksheet, headers) => {
   worksheet.eachRow((row, rowIndex) => {
@@ -8,6 +11,7 @@ export const applyValidationBasedOnHeaderColor = (worksheet, headers) => {
         worksheet.getColumn(colIndex).eachCell((cell, rowNumber) => {
           const required = headers[colIndex - 1]?.required
           const maxLength = headers[colIndex - 1]?.maxLength || 50
+          const rules = headers[colIndex - 1]?.rules
           if (rowNumber > 1) {
             if (
               required &&
@@ -36,6 +40,13 @@ export const applyValidationBasedOnHeaderColor = (worksheet, headers) => {
                 errorTitle: 'Invalid Date',
                 error: 'Date must be in DD/MM/YYYY format'
               }
+              if (
+                cell.value &&
+                cell.value instanceof Date &&
+                !isNaN(cell.value)
+              ) {
+                cell.border = styleToHighlightValidationError()
+              }
             } else if (cellColor === 'FFA500') {
               cell.dataValidation = {
                 type: 'list',
@@ -55,9 +66,15 @@ export const applyValidationBasedOnHeaderColor = (worksheet, headers) => {
               }
 
               // Highlight if cell is not a whole number
-              if (cell.value < 0) {
-                cell.border = styleToHighlight()
+              if (cell.value && cell.value < 0) {
+                cell.border = styleToHighlightValidationError()
               }
+            }
+
+            if (rules === 'mobile' && cell.value !== null) {
+              const ukMobileRegex = /^(?:\+44\s?|0)7[1-9]\d{2}\s?\d{6}$/
+              const flag = ukMobileRegex.test(cell?.value?.trim())
+              if (!flag) cell.border = styleToHighlightValidationError()
             }
           }
         })

@@ -195,7 +195,8 @@ Max 30 characters.`
     key: 'mobileCore',
     width: 20,
     color: '0000FF',
-    required: true
+    required: true,
+    rules: 'mobile'
   },
   {
     header: 'Grid ref - Core',

@@ -59,3 +59,12 @@ export const styleToHighlight = () => {
     right: { style: 'thin', color: { argb: 'FFFF00' } }
   }
 }
+
+export const styleToHighlightValidationError = () => {
+  return {
+    top: { style: 'thin', color: { argb: 'FFA500' } },
+    left: { style: 'thin', color: { argb: 'FFA500' } },
+    bottom: { style: 'thin', color: { argb: 'FFA500' } },
+    right: { style: 'thin', color: { argb: 'FFA500' } }
+  }
+}
