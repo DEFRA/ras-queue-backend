@@ -47,38 +47,6 @@ export const loadExcelToMap = async (
 
   const dataMap = new Map()
 
-  // worksheet.eachRow((row, rowIndex) => {
-  //   if (rowIndex > rowNumber) {
-  //     const key = row.getCell(columnMap[keyColumnName]).value
-  //     if (key) {
-  //       const values = {}
-  //       valueColumnNames.forEach((name) => {
-  //         values[name] = row.getCell(columnMap[name]).value
-  //       })
-  //       dataMap.set(key, values)
-  //     }
-  //   }
-  // })
-
-  // const rows = worksheet.getSheetValues()
-
-  // console.log('rowCount:', rows.length)
-
-  // for (let rowIndex = rowNumber; rowIndex <= rows.length; rowIndex++) {
-  //   const row = rows[rowIndex]
-  //   console.log("each row", row)
-  //   if (!row) continue
-  //   const key = row[columnMap.indexOf(keyColumnName)]?.value
-
-  //   if (key) {
-  //     const values = {}
-  //     for (const name of valueColumnNames) {
-  //       values[name] = row[columnMap[name]]?.value || null
-  //     }
-  //     dataMap.set(key, values)
-  //   }
-  // }
-
   let rows = worksheet.getRows(rowNumber, worksheet.rowCount - rowNumber)
   for (const row of rows) {
     const key = row.getCell(columnMap[keyColumnName])?.value

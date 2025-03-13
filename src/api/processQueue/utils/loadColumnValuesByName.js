@@ -14,12 +14,6 @@ export const loadColumnNamesByName = async (
   const startTime = new Date()
   const workbook = new ExcelJS.Workbook()
 
-  // const buffer = Buffer.from(
-  //   sourceFile.find(
-  //     (file) => file.fileName === 'FETF_FTF_Selection_Working_Doc.xlsx'
-  //   ).data
-  // )
-
   const buffer = fs.readFileSync(sourceFile)
 
   const workbookXLSX = read(buffer, { type: 'buffer' })
@@ -39,16 +33,6 @@ export const loadColumnNamesByName = async (
   const idColumnIndex = headerRow.values.indexOf(keyColumnName)
 
   const nameColumnIndex = headerRow.values.indexOf(valueColumnName)
-
-  // worksheet.eachRow((row, rowIndex) => {
-  //   const idValue = row.getCell(idColumnIndex).value
-  //   if (rowIndex > rowNumber) {
-  //     if (idValue === lookupValue) {
-  //       const nameValue = row.getCell(nameColumnIndex).value
-  //       result.push(nameValue)
-  //     }
-  //   }
-  // })
 
   const rows = worksheet.getSheetValues()
   for (let i = rowNumber + 1; i < rows.length; i++) {
